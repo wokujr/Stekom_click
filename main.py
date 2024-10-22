@@ -1,9 +1,7 @@
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-import time
 from dotenv import load_dotenv
 import os
+from functions.scroll import *
 
 load_dotenv()
 
@@ -32,20 +30,6 @@ time.sleep(2)
 submit_button = driver.find_element(By.NAME, 'Submit')
 submit_button.click()
 
-def SmoothScroll(driver, scroll_step=10, scroll_pause=0.01):
-    last_height = driver.execute_script("return document.body.scrollHeight")
-    while True:
-        driver.execute_script(f"window.scrollBy(0, {scroll_step})")
-        time.sleep(scroll_pause)
-
-        new_height = driver.execute_script("return window.pageYOffset + window.innerHeight")
-        total_height = driver.execute_script("return document.body.scrollHeight")
-
-        if new_height >= total_height:
-            break
-
-        last_height =total_height
-
 SmoothScroll(driver)
 
 driver.implicitly_wait(2)
@@ -63,6 +47,8 @@ try:
                 break
 except Exception as e:
     print(f"an Error occurred: {e}")
+
+ClickPresence(driver)
 
 time.sleep(10)
 
