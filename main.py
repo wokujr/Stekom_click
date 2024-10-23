@@ -1,7 +1,7 @@
 from selenium import webdriver
 from dotenv import load_dotenv
 import os
-from functions.scroll import *
+from functions.automatic import *
 
 load_dotenv()
 
@@ -38,7 +38,7 @@ try:
     for index, item in enumerate(list_items, start=1):
         item_text = item.text.strip()
         if item_text:
-            print(f"{index}. {item_text}")
+            #print(f"{index}. {item_text}")
             if "Jadwal Kelasku" in item_text:
                 jadwal_kelas_link = item.find_element(By.TAG_NAME, 'a')
                 print(f"Clicking on: {item_text}")
@@ -48,7 +48,7 @@ try:
 except Exception as e:
     print(f"an Error occurred: {e}")
 
-ClickPresence(driver)
+LoopDiv(driver)
 
 time.sleep(10)
 
