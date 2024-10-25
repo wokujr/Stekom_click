@@ -33,23 +33,37 @@ def ClickPresence(driver):
 
 def LoopDiv(driver):
     time.sleep(2)
-    #parent_div = driver.find_element(By.XPATH, "//div[@class='row' and contains(@style,'background-color:#FFFFFF')]")
-    # all_divs = parent_div.find_elements(By.TAG_NAME, "div")
-    # div_arrays =[]
-    # for index, div in enumerate(all_divs):
-    #     div_info = {
-    #         "index": index + 1,  #start from 1?
-    #         "div":div,
-    #         "text": div.get_attribute("text"),
-    #         "outerHTML":div.get_attribute("outerHTML"),
-    #     }
-    #     div_arrays.append(div_info)
-    #
-    # first_two_divs = div_arrays[:3]
-    # for div_array in first_two_divs:
-    #     print(f" Div #{div_array['index']}: \n Text: {div_array['text']} \n HTML: {div_array['outerHTML']}")
-    #
-    # return div_arrays
+    # Locate the parent div
+    parent_div = driver.find_element(By.XPATH, "//div[@class='col-xs-12 col-sm-12 col-md-12 col-lg-12 ']")
+
+    # Get all the children divs within the parent
+    all_child_divs = parent_div.find_elements(By.XPATH, "./div")
+
+    # Store them in an array
+    div_arrays = []
+
+    for index, div in enumerate(all_child_divs):
+        div_info = {
+            "index": index,
+            "text": div.get_attribute("textContent"),       # Text inside the div
+            "outerHTML": div.get_attribute("outerHTML"),    # Complete HTML of the div
+        }
+        div_arrays.append(div_info)
+
+    # Get only the first two divs from the list (if they exist)
+    if len(div_arrays) >= 4:
+        div_subset = div_arrays[4:]
+    else:
+        div_subset = div_arrays
+
+    # Print details for the first two divs
+    for div_array in div_subset:
+        print(f" Div #{div_array['index']}:\n Text: {div_array['text']}\n HTML: {div_array['outerHTML']}\n")
+
+    return div_subset
+
+def LoopAndClick(driver):
+    time.sleep(2)
 
     # Locate the parent div
     parent_div = driver.find_element(By.XPATH, "//div[@class='col-xs-12 col-sm-12 col-md-12 col-lg-12 ']")
@@ -62,20 +76,43 @@ def LoopDiv(driver):
 
     for index, div in enumerate(all_child_divs):
         div_info = {
-            "index": index + 1,  # Start numbering from 1
-            "text": div.get_attribute("textContent"),  # Text inside the div
-            "outerHTML": div.get_attribute("outerHTML"),  # Complete HTML of the div
+            "index": index,
+            "text": div.get_attribute("textContent"),       # Text inside the div
+            "outerHTML": div.get_attribute("outerHTML"),    # Complete HTML of the div
+            "button": div.find_element(By.XPATH, "//strong[contains(text(), 'Masuk Kelas')]")  # Find "Masuk Kelas" button inside each div
         }
         div_arrays.append(div_info)
 
-    # Get only the first two divs from the list (if they exist)
-    if len(div_arrays) >= 2:
-        first_two_divs = div_arrays[:2]
-    else:
-        first_two_divs = div_arrays
+    # Loop through the div elements, click the button, go back, and click the next button
+    for div_array in div_arrays:
+        # Click the "Masuk Kelas" button
+        button = div_array['button']
+        button.click()
+        print(f"Clicked on 'Masuk Kelas' button in div #{div_array['index']}")
 
-    # Print details for the first two divs
-    for div_array in first_two_divs:
-        print(f"Div #{div_array['index']}:\nText: {div_array['text']}\nHTML: {div_array['outerHTML']}\n")
+        # Wait for the next page to load (adjust time or use a better wait method)
+        time.sleep(5)  # Replace with WebDriverWait if necessary
 
-    return first_two_divs
+        # Go back to the previous page
+        driver.back()
+        print("Back to previous page")
+
+        # Wait for the page to reload and divs to be available again
+        time.sleep(3)
+
+        # Re-locate the parent div and all its child divs again after navigating back
+        parent_div = driver.find_element(By.XPATH, "//div[@class='col-xs-12 col-sm-12 col-md-12 col-lg-12 ']")
+        all_child_divs = parent_div.find_elements(By.XPATH, "./div")
+
+        # Store updated divs in the array again
+        div_arrays = []
+        for index, div in enumerate(all_child_divs):
+            div_info = {
+                "index": index,
+                "text": div.get_attribute("textContent"),
+                "outerHTML": div.get_attribute("outerHTML"),
+                "button": div.find_element(By.XPATH, "//strong[contains(text(), 'Masuk Kelas')]")  # Re-fetch the buttons
+            }
+            div_arrays.append(div_info)
+
+    return div_arrays

@@ -48,7 +48,7 @@ try:
 except Exception as e:
     print(f"an Error occurred: {e}")
 
-LoopDiv(driver)
+LoopAndClick(driver)
 
 time.sleep(10)
 
